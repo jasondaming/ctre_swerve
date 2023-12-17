@@ -5,11 +5,13 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -23,6 +25,8 @@ public class Telemetry {
     private int logEntry;
     private int odomEntry;
 
+    private final StructArrayPublisher<SwerveModuleState> publisher;
+
     /**
      * Construct a telemetry object, with the specified max speed of the robot
      * 
@@ -32,6 +36,10 @@ public class Telemetry {
         MaxSpeed = maxSpeed;
         logEntry = DataLogManager.getLog().start("odometry", "double[]");
         odomEntry = DataLogManager.getLog().start("odom period", "double");
+        
+        // Start publishing an array of module states with the "/SwerveStates" key
+        publisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
     }
 
     /* What to publish over networktables for telemetry */
@@ -112,6 +120,9 @@ public class Telemetry {
 
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
+
+        // Periodically send a set of module states
+        publisher.set(state.ModuleStates);
 
         DataLogManager.getLog().appendDoubleArray(logEntry, new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()}, (long)(Timer.getFPGATimestamp() * 1000000));
         DataLogManager.getLog().appendDouble(odomEntry, state.OdometryPeriod, (long)(Timer.getFPGATimestamp() * 1000000));

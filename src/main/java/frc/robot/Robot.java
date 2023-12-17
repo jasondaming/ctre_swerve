@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private final boolean UseLimelight = false;
+  private final boolean UseLimelight = true;
 
   @Override
   public void robotInit() {
@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
-    if(UseLimelight) {    
+    if(UseLimelight && !isSimulation()) {    
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
       Pose2d llPose = lastResult.getBotPose2d_wpiBlue();

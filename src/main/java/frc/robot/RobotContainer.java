@@ -26,6 +26,7 @@ import frc.robot.generated.TunerConstants;
 public class RobotContainer {
   private SendableChooser<Command> autoChooser;
   private SendableChooser<String> controlChooser = new SendableChooser<>();
+  private SendableChooser<Double> speedChooser = new SendableChooser<>();
   final double MaxSpeed = 6; // 6 meters per second desired top speed
   final double MaxAngularRate = Math.PI; // Half a rotation per second max angular velocity
 
@@ -49,6 +50,7 @@ public class RobotContainer {
   private Supplier<SwerveRequest> controlStyle;
 
   private String lastControl = "2 Joysticks";
+  private Double lastSpeed = 0.65;
 
   private void configureBindings() {
     newControlStyle();
@@ -70,6 +72,9 @@ public class RobotContainer {
 
     Trigger controlPick = new Trigger(() -> lastControl != controlChooser.getSelected());
     controlPick.onTrue(Commands.runOnce(() -> newControlStyle()));
+
+    Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
+    speedPick.onTrue(Commands.runOnce(() -> newSpeed()));
   }
 
   public RobotContainer() {
@@ -84,6 +89,20 @@ public class RobotContainer {
     controlChooser.addOption("Split Joysticks Rotation Triggers", "Split Joysticks Rotation Triggers");
     controlChooser.addOption("2 Joysticks with Gas Pedal", "2 Joysticks with Gas Pedal");
     SmartDashboard.putData("Control Chooser", controlChooser);
+
+    speedChooser.addOption("100%", 1.0);
+    speedChooser.addOption("95%", 0.95);
+    speedChooser.addOption("90%", 0.9);
+    speedChooser.addOption("85%", 0.85);
+    speedChooser.addOption("80%", 0.8);
+    speedChooser.addOption("75%", 0.75);
+    speedChooser.addOption("70%", 0.7);
+    speedChooser.setDefaultOption("65%", 0.65);
+    speedChooser.addOption("60%", 0.6);
+    speedChooser.addOption("55%", 0.55);
+    speedChooser.addOption("50%", 0.5);
+    speedChooser.addOption("35%", 0.35);
+    SmartDashboard.putData("Speed Limit", speedChooser);
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -126,5 +145,9 @@ public class RobotContainer {
     }
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(controlStyle).ignoringDisable(true));
+  }
+
+  private void newSpeed() {
+    
   }
 }

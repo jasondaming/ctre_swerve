@@ -25,7 +25,7 @@ public class Telemetry {
     private int logEntry;
     private int odomEntry;
 
-    private final StructArrayPublisher<SwerveModuleState> publisher;
+/*     private final StructArrayPublisher<SwerveModuleState> publisher; */
 
     /**
      * Construct a telemetry object, with the specified max speed of the robot
@@ -37,9 +37,9 @@ public class Telemetry {
         logEntry = DataLogManager.getLog().start("odometry", "double[]");
         odomEntry = DataLogManager.getLog().start("odom period", "double");
         
-        // Start publishing an array of module states with the "/SwerveStates" key
+/*         // Start publishing an array of module states with the "/SwerveStates" key
         publisher = NetworkTableInstance.getDefault()
-                .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
+                .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish(); */
     }
 
     /* What to publish over networktables for telemetry */
@@ -121,8 +121,8 @@ public class Telemetry {
             SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
 
-        // Periodically send a set of module states
-        publisher.set(state.ModuleStates);
+/*         // Periodically send a set of module states
+        publisher.set(state.ModuleStates); */
 
         DataLogManager.getLog().appendDoubleArray(logEntry, new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()}, (long)(Timer.getFPGATimestamp() * 1000000));
         DataLogManager.getLog().appendDouble(odomEntry, state.OdometryPeriod, (long)(Timer.getFPGATimestamp() * 1000000));

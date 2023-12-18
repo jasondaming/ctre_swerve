@@ -135,12 +135,14 @@ public class RobotContainer {
             // Left trigger turns left, right trigger turns right
         break;
       case "2 Joysticks with Gas Pedal":
-        var stickX = -drv.getLeftX();
-        var stickY = -drv.getLeftY();
-        var angle = Math.atan2(stickX, -stickY);
-        controlStyle = () -> drive.withVelocityX(Math.cos(angle) * drv.getRightTriggerAxis() * MaxSpeed) // left x * gas
+        controlStyle = () -> {
+            var stickX = -drv.getLeftX();
+            var stickY = drv.getLeftY();
+            var angle = Math.atan2(stickX, -stickY);
+            return drive.withVelocityX(Math.cos(angle) * drv.getRightTriggerAxis() * MaxSpeed) // left x * gas
             .withVelocityY(Math.sin(angle) * drv.getRightTriggerAxis() * MaxSpeed) // Angle of left stick Y * gas pedal
             .withRotationalRate(-drv.getRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+        };
         break;
     }
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -148,6 +150,6 @@ public class RobotContainer {
   }
 
   private void newSpeed() {
-    
+
   }
 }

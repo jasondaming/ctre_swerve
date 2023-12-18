@@ -27,7 +27,7 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
   private SendableChooser<String> controlChooser = new SendableChooser<>();
   private SendableChooser<Double> speedChooser = new SendableChooser<>();
-  final double MaxSpeed = 6; // 6 meters per second desired top speed
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // 6 meters per second desired top speed
   final double MaxAngularRate = Math.PI; // Half a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -54,6 +54,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     newControlStyle();
+    newSpeed();
 
     drv.a().whileTrue(drivetrain.applyRequest(() -> brake));
     drv.b().whileTrue(drivetrain
@@ -137,11 +138,11 @@ public class RobotContainer {
       case "2 Joysticks with Gas Pedal":
         controlStyle = () -> {
             var stickX = -drv.getLeftX();
-            var stickY = drv.getLeftY();
-            var angle = Math.atan2(stickX, -stickY);
+            var stickY = -drv.getLeftY();
+            var angle = Math.atan2(stickX, stickY);
             return drive.withVelocityX(Math.cos(angle) * drv.getRightTriggerAxis() * MaxSpeed) // left x * gas
-            .withVelocityY(Math.sin(angle) * drv.getRightTriggerAxis() * MaxSpeed) // Angle of left stick Y * gas pedal
-            .withRotationalRate(-drv.getRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                .withVelocityY(Math.sin(angle) * drv.getRightTriggerAxis() * MaxSpeed) // Angle of left stick Y * gas pedal
+                .withRotationalRate(-drv.getRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
         };
         break;
     }
@@ -150,6 +151,7 @@ public class RobotContainer {
   }
 
   private void newSpeed() {
-
+    lastSpeed = speedChooser.getSelected();
+    MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * lastSpeed;
   }
 }

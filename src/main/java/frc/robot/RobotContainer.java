@@ -146,6 +146,9 @@ public class RobotContainer {
         };
         break;
     }
+    try {
+      drivetrain.getDefaultCommand().cancel();
+    } catch(Exception e) {}
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(controlStyle).ignoringDisable(true));
   }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
+
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -18,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
@@ -27,8 +28,8 @@ public class RobotContainer {
   private SendableChooser<Command> autoChooser;
   private SendableChooser<String> controlChooser = new SendableChooser<>();
   private SendableChooser<Double> speedChooser = new SendableChooser<>();
-  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // 6 meters per second desired top speed
-  final double MaxAngularRate = Math.PI; // Half a rotation per second max angular velocity
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
+  final double MaxAngularRate = Math.PI * 2; // Full rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   CommandXboxController drv = new CommandXboxController(0); // driver xbox controller
@@ -63,6 +64,10 @@ public class RobotContainer {
     // reset the field-centric heading on start button press
     drv.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
+    // Turtle Mode while held
+    drv.leftBumper().onTrue(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * 0.1));
+    drv.leftBumper().onFalse(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * speedChooser.getSelected()));
+
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
@@ -72,10 +77,10 @@ public class RobotContainer {
     drv.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
     Trigger controlPick = new Trigger(() -> lastControl != controlChooser.getSelected());
-    controlPick.onTrue(Commands.runOnce(() -> newControlStyle()));
+    controlPick.onTrue(runOnce(() -> newControlStyle()));
 
     Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
-    speedPick.onTrue(Commands.runOnce(() -> newSpeed()));
+    speedPick.onTrue(runOnce(() -> newSpeed()));
   }
 
   public RobotContainer() {

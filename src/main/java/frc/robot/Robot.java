@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private final boolean UseLimelight = true;
+  private final boolean UseLimelight = false;
 
   @Override
   public void robotInit() {

@@ -11,16 +11,34 @@ public class SwerveVoltageRequest implements SwerveRequest {
     private final VoltageOut m_voltageOutControl = new VoltageOut(0.0);
 
     private double m_targetVoltage = 0.0;
+    private boolean m_driveType = true;
+
+    public SwerveVoltageRequest(boolean driveType) {
+        m_driveType = driveType;
+    }
+
+    public SwerveVoltageRequest() {
+        m_driveType = true;
+    }
 
     @Override
     public StatusCode apply(SwerveControlRequestParameters parameters, SwerveModule... modulesToApply) {
         for (var module : modulesToApply) 
         {
-            // Command steer motor to zero
-            module.getSteerMotor().setControl(m_motionMagicControl);
+            if (m_driveType) {
+                // Command steer motor to zero
+                module.getSteerMotor().setControl(m_motionMagicControl);
 
-            // Command drive motor to voltage
-            module.getDriveMotor().setControl(m_voltageOutControl.withOutput(m_targetVoltage));
+                // Command drive motor to voltage
+                module.getDriveMotor().setControl(m_voltageOutControl.withOutput(m_targetVoltage));
+            }
+            else {
+                // Command steer motor to voltage
+                module.getSteerMotor().setControl(m_voltageOutControl.withOutput(m_targetVoltage));
+
+                // Command drive motor to zero
+                module.getDriveMotor().setControl(m_motionMagicControl);
+            }
         }
 
         return StatusCode.OK;

@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Util.ModifiedSignalLogger;
+import frc.robot.Util.SwerveVoltageRequest;
 import frc.robot.Util.SysIdRoutine;
-import frc.robot.Util.SysIdRoutineLog;
 import frc.robot.Util.SysIdRoutine.Direction;
 
 /**
@@ -75,22 +75,41 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
-    private VoltageOut voltageRequest = new VoltageOut(0);
+    private SwerveVoltageRequest driveVoltageRequest = new SwerveVoltageRequest(true);
 
-    private SysIdRoutine m_sysIdRoutine =
+    private SysIdRoutine m_driveSysIdRoutine =
     new SysIdRoutine(
         new SysIdRoutine.Config(null, null, null, ModifiedSignalLogger.logState()),
         new SysIdRoutine.Mechanism(
-            (Measure<Voltage> volts) -> setControl(voltageRequest.withVoltage(volts.in(Volts))),
+            (Measure<Voltage> volts) -> setControl(driveVoltageRequest.withVoltage(volts.in(Volts))),
+            null,
+            this));
+
+    private SwerveVoltageRequest steerVoltageRequest = new SwerveVoltageRequest(false);
+
+    private SysIdRoutine m_steerSysIdRoutine =
+    new SysIdRoutine(
+        new SysIdRoutine.Config(null, null, null, ModifiedSignalLogger.logState()),
+        new SysIdRoutine.Mechanism(
+            (Measure<Voltage> volts) -> setControl(steerVoltageRequest.withVoltage(volts.in(Volts))),
             null,
             this));
     
-    public Command runQuasiTest(Direction direction)
+    public Command runDriveQuasiTest(Direction direction)
     {
-        return m_sysIdRoutine.quasistatic(direction);
+        return m_driveSysIdRoutine.quasistatic(direction);
     }
 
-    public Command runDynamTest(SysIdRoutine.Direction direction) {
-        return m_sysIdRoutine.dynamic(direction);
+    public Command runDriveDynamTest(SysIdRoutine.Direction direction) {
+        return m_driveSysIdRoutine.dynamic(direction);
+    }
+
+    public Command runSteerQuasiTest(Direction direction)
+    {
+        return m_steerSysIdRoutine.quasistatic(direction);
+    }
+
+    public Command runSteerDynamTest(SysIdRoutine.Direction direction) {
+        return m_steerSysIdRoutine.dynamic(direction);
     }
 }

@@ -86,11 +86,17 @@ public class RobotContainer {
     Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
     speedPick.onTrue(runOnce(() -> newSpeed()));
 
-    drv.x().and(drv.pov(0)).whileTrue(drivetrain.runQuasiTest(Direction.kForward));
-    drv.x().and(drv.pov(180)).whileTrue(drivetrain.runQuasiTest(Direction.kReverse));
+    drv.x().and(drv.pov(0)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kForward));
+    drv.x().and(drv.pov(180)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kReverse));
 
-    drv.y().and(drv.pov(0)).whileTrue(drivetrain.runDynamTest(Direction.kForward));
-    drv.y().and(drv.pov(180)).whileTrue(drivetrain.runDynamTest(Direction.kReverse));
+    drv.y().and(drv.pov(0)).whileTrue(drivetrain.runDriveDynamTest(Direction.kForward));
+    drv.y().and(drv.pov(180)).whileTrue(drivetrain.runDriveDynamTest(Direction.kReverse));
+
+    drv.a().and(drv.pov(0)).whileTrue(drivetrain.runSteerQuasiTest(Direction.kForward));
+    drv.a().and(drv.pov(180)).whileTrue(drivetrain.runSteerQuasiTest(Direction.kReverse));
+
+    drv.b().and(drv.pov(0)).whileTrue(drivetrain.runSteerDynamTest(Direction.kForward));
+    drv.b().and(drv.pov(180)).whileTrue(drivetrain.runSteerDynamTest(Direction.kReverse));
   }
 
   public RobotContainer() {

@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Util.SysIdRoutine.Direction;
+import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
 
 public class RobotContainer {
@@ -40,6 +42,8 @@ public class RobotContainer {
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+  Limelight vision = new Limelight(drivetrain);
 
   /* Path follower */
   Command runAuto = drivetrain.getAutoPath("Tests");
@@ -81,6 +85,12 @@ public class RobotContainer {
 
     Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
     speedPick.onTrue(runOnce(() -> newSpeed()));
+
+    drv.x().and(drv.pov(0)).whileTrue(drivetrain.runQuasiTest(Direction.kForward));
+    drv.x().and(drv.pov(180)).whileTrue(drivetrain.runQuasiTest(Direction.kReverse));
+
+    drv.y().and(drv.pov(0)).whileTrue(drivetrain.runDynamTest(Direction.kForward));
+    drv.y().and(drv.pov(180)).whileTrue(drivetrain.runDynamTest(Direction.kReverse));
   }
 
   public RobotContainer() {

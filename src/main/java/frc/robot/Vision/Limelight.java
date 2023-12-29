@@ -41,7 +41,7 @@ public class Limelight extends SubsystemBase {
       Double confidence = 1 - ((targetDistance - 1) / 6);
       LimelightHelpers.Results result =
           LimelightHelpers.getLatestResults(ll).targetingResults;
-      if (!(result.botpose[0] == 0 && result.botpose[1] == 0)) {
+      if (result.valid) {
         if (alliance == Alliance.Blue) {
           botpose = LimelightHelpers.getBotPose2d_wpiBlue(ll);
         } else if (alliance == Alliance.Red) {

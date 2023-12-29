@@ -40,10 +40,18 @@
     }
   },
   "NetworkTables": {
-    "transitory": {
-      "Drive": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Transitory Values": {
+      "open": false
+    },
+    "retained": {
+      "limelight": {
         "open": true
-      },
+      }
+    },
+    "transitory": {
       "Pose": {
         "double[]##v_/Pose/robotPose": {
           "open": true

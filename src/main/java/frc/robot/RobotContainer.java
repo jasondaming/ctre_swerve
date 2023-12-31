@@ -31,14 +31,15 @@ public class RobotContainer {
   private SendableChooser<String> controlChooser = new SendableChooser<>();
   private SendableChooser<Double> speedChooser = new SendableChooser<>();
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
-  final double MaxAngularRate = Math.PI * 2; // Full rotation per second max angular velocity
+  final double MaxAngularRate = Math.PI * 1.5; // .75 rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   CommandXboxController drv = new CommandXboxController(0); // driver xbox controller
   CommandXboxController op = new CommandXboxController(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
-  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1); // I want field-centric
-                                                                                            // driving in open loop
+  
+   // Field-centric driving in Open Loop, can change to close loop after characterization
+  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1);
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -73,12 +74,9 @@ public class RobotContainer {
     drv.leftBumper().onFalse(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * speedChooser.getSelected()));
 
     if (Utils.isSimulation()) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
-
-    drv.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-    drv.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
     Trigger controlPick = new Trigger(() -> lastControl != controlChooser.getSelected());
     controlPick.onTrue(runOnce(() -> newControlStyle()));

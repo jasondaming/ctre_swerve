@@ -19,7 +19,7 @@ public class Limelight extends SubsystemBase {
   CommandSwerveDrivetrain drivetrain;
   Alliance alliance;
   private String ll = "limelight";
-  private Boolean enable = true;
+  private Boolean enable = false;
   private Boolean trust = false;
   private int fieldError = 0;
   private int distanceError = 0;

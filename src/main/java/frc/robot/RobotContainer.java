@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,23 +32,23 @@ public class RobotContainer {
   private SendableChooser<String> controlChooser = new SendableChooser<>();
   private SendableChooser<Double> speedChooser = new SendableChooser<>();
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
-  final double MaxAngularRate = Math.PI * 1.5; // .75 rotation per second max angular velocity
+  final double MaxAngularRate = Math.PI * 1.5; // .75 rotation per second max angular velocity.  Adjust for max turning rate speed.
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   CommandXboxController drv = new CommandXboxController(0); // driver xbox controller
   CommandXboxController op = new CommandXboxController(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
   
-   // Field-centric driving in Open Loop, can change to close loop after characterization
+  // Field-centric driving in Open Loop, can change to closed loop after characterization 
   SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1);
+  // Field-centric driving in Closed Loop.  Comment above and uncomment below.
+  //SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1);
+
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   Limelight vision = new Limelight(drivetrain);
-
-  /* Path follower */
-  Command runAuto = drivetrain.getAutoPath("Tests");
 
   Telemetry logger = new Telemetry(MaxSpeed);
 

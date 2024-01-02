@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -96,6 +95,9 @@ public class RobotContainer {
 
     drv.b().and(drv.pov(0)).whileTrue(drivetrain.runSteerDynamTest(Direction.kForward));
     drv.b().and(drv.pov(180)).whileTrue(drivetrain.runSteerDynamTest(Direction.kReverse));
+
+    // Drivetrain needs to be placed against a sturdy wall and test stopped immediately upon wheel slip
+    drv.back().and(drv.pov(0)).whileTrue(drivetrain.runDriveSlipTest());
   }
 
   public RobotContainer() {

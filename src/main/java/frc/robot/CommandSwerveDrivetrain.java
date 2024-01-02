@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -25,6 +24,7 @@ import frc.robot.Util.ModifiedSignalLogger;
 import frc.robot.Util.SwerveVoltageRequest;
 import frc.robot.Util.SysIdRoutine;
 import frc.robot.Util.SysIdRoutine.Direction;
+import static edu.wpi.first.units.Units.*;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
@@ -94,6 +94,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             (Measure<Voltage> volts) -> setControl(steerVoltageRequest.withVoltage(volts.in(Volts))),
             null,
             this));
+
+    private SysIdRoutine m_slipSysIdRoutine =
+    new SysIdRoutine(
+        new SysIdRoutine.Config(Volts.of(0.25).per(Seconds.of(1)), null, null, ModifiedSignalLogger.logState()),
+        new SysIdRoutine.Mechanism(
+            (Measure<Voltage> volts) -> setControl(driveVoltageRequest.withVoltage(volts.in(Volts))),
+            null,
+            this));
     
     public Command runDriveQuasiTest(Direction direction)
     {
@@ -111,5 +119,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command runSteerDynamTest(SysIdRoutine.Direction direction) {
         return m_steerSysIdRoutine.dynamic(direction);
+    }
+
+    public Command runDriveSlipTest()
+    {
+        return m_slipSysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
     }
 }

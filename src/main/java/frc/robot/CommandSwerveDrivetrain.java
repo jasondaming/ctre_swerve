@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
@@ -24,6 +22,8 @@ import frc.robot.Util.ModifiedSignalLogger;
 import frc.robot.Util.SwerveVoltageRequest;
 import frc.robot.Util.SysIdRoutine;
 import frc.robot.Util.SysIdRoutine.Direction;
+import frc.robot.generated.TunerConstants;
+
 import static edu.wpi.first.units.Units.*;
 
 /**
@@ -50,10 +50,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
             new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
                                             new PIDConstants(10, 0, 0),
-                                            1,
-                                            1,
-                                            new ReplanningConfig(),
-                                            0.004),
+                                            TunerConstants.kSpeedAt12VoltsMps,
+                                            TunerConstants.maxModuleRadius,
+                                            new ReplanningConfig()),
             this); // Subsystem for requirements
     }
 

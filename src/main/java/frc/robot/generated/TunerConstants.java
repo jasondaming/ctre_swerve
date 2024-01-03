@@ -88,6 +88,7 @@ public class TunerConstants {
 
     private static final double kFrontLeftXPosInches = 9.5;
     private static final double kFrontLeftYPosInches = 8.25;
+    private static final double FrontLeftPos = Math.sqrt(Math.pow(kFrontLeftXPosInches, 2) + Math.pow(kFrontLeftYPosInches, 2));
 
     // Front Right
     private static final int kFrontRightDriveMotorId = 21;
@@ -97,6 +98,7 @@ public class TunerConstants {
 
     private static final double kFrontRightXPosInches = 9.5;
     private static final double kFrontRightYPosInches = -8.25;
+    private static final double FrontRightPos = Math.sqrt(Math.pow(kFrontRightXPosInches, 2) + Math.pow(kFrontRightYPosInches, 2));
 
     // Back Left
     private static final int kBackLeftDriveMotorId = 41;
@@ -106,6 +108,7 @@ public class TunerConstants {
 
     private static final double kBackLeftXPosInches = -9.5;
     private static final double kBackLeftYPosInches = 8.25;
+    private static final double BackLeftPos = Math.sqrt(Math.pow(kBackLeftXPosInches, 2) + Math.pow(kBackLeftYPosInches, 2));
 
     // Back Right
     private static final int kBackRightDriveMotorId = 31;
@@ -115,7 +118,9 @@ public class TunerConstants {
 
     private static final double kBackRightXPosInches = -9.5;
     private static final double kBackRightYPosInches = -8.25;
+    private static final double BackRightPos = Math.sqrt(Math.pow(kBackRightXPosInches, 2) + Math.pow(kBackRightYPosInches, 2));
 
+    public static final double maxModuleRadius = Math.max(FrontLeftPos, Math.max(FrontRightPos, Math.max(BackRightPos, BackLeftPos)));
 
     private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
             kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset, Units.inchesToMeters(kFrontLeftXPosInches), Units.inchesToMeters(kFrontLeftYPosInches), kInvertLeftSide);

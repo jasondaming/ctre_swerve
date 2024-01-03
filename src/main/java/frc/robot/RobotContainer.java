@@ -31,7 +31,10 @@ public class RobotContainer {
   private SendableChooser<String> controlChooser = new SendableChooser<>();
   private SendableChooser<Double> speedChooser = new SendableChooser<>();
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
-  final double MaxAngularRate = Math.PI * 1.5; // .75 rotation per second max angular velocity.  Adjust for max turning rate speed.
+  private final double TurtleSpeed = 0.1; // Reduction in speed from Max Speed, 0.1 = 10%
+  private final double MaxAngularRate = Math.PI * 1.5; // .75 rotation per second max angular velocity.  Adjust for max turning rate speed.
+  private final double TurtleAngularRate = Math.PI * 0.5; // .75 rotation per second max angular velocity.  Adjust for max turning rate speed.
+  private double AngularRate = MaxAngularRate; // This will be updated when turtle and reset to MaxAngularRate
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   CommandXboxController drv = new CommandXboxController(0); // driver xbox controller
@@ -39,9 +42,9 @@ public class RobotContainer {
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
   
   // Field-centric driving in Open Loop, can change to closed loop after characterization 
-  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1);
+  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(AngularRate * 0.1);
   // Field-centric driving in Closed Loop.  Comment above and uncomment below.
-  //SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1);
+  //SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(AngularRate * 0.1);
 
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -70,8 +73,10 @@ public class RobotContainer {
     drv.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     // Turtle Mode while held
-    drv.leftBumper().onTrue(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * 0.1));
-    drv.leftBumper().onFalse(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * speedChooser.getSelected()));
+    drv.leftBumper().onTrue(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * TurtleSpeed)
+        .andThen(() -> AngularRate = TurtleAngularRate));
+    drv.leftBumper().onFalse(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * speedChooser.getSelected())
+        .andThen(() -> AngularRate = MaxAngularRate));
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
@@ -143,18 +148,18 @@ public class RobotContainer {
       case "2 Joysticks":
         controlStyle = () -> drive.withVelocityX(-drv.getLeftY() * MaxSpeed) // Drive forward -Y
             .withVelocityY(-drv.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-drv.getRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+            .withRotationalRate(-drv.getRightX() * AngularRate); // Drive counterclockwise with negative X (left)
         break;
       case "1 Joystick Rotation Triggers":
         controlStyle = () -> drive.withVelocityX(-drv.getLeftY() * MaxSpeed) // Drive forward -Y
             .withVelocityY(-drv.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate((drv.getLeftTriggerAxis() - drv.getRightTriggerAxis()) * MaxAngularRate);
+            .withRotationalRate((drv.getLeftTriggerAxis() - drv.getRightTriggerAxis()) * AngularRate);
             // Left trigger turns left, right trigger turns right
         break;
       case "Split Joysticks Rotation Triggers":
         controlStyle = () -> drive.withVelocityX(-drv.getLeftY() * MaxSpeed) // Left stick forward/back
             .withVelocityY(-drv.getRightX() * MaxSpeed) // Right stick strafe
-            .withRotationalRate((drv.getLeftTriggerAxis() - drv.getRightTriggerAxis()) * MaxAngularRate);
+            .withRotationalRate((drv.getLeftTriggerAxis() - drv.getRightTriggerAxis()) * AngularRate);
             // Left trigger turns left, right trigger turns right
         break;
       case "2 Joysticks with Gas Pedal":
@@ -164,7 +169,7 @@ public class RobotContainer {
             var angle = Math.atan2(stickX, stickY);
             return drive.withVelocityX(Math.cos(angle) * drv.getRightTriggerAxis() * MaxSpeed) // left x * gas
                 .withVelocityY(Math.sin(angle) * drv.getRightTriggerAxis() * MaxSpeed) // Angle of left stick Y * gas pedal
-                .withRotationalRate(-drv.getRightX() * MaxAngularRate); // Drive counterclockwise with negative X (left)
+                .withRotationalRate(-drv.getRightX() * AngularRate); // Drive counterclockwise with negative X (left)
         };
         break;
     }

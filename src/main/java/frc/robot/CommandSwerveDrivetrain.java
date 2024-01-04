@@ -43,6 +43,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private void configurePathPlanner() {
+        double driveBaseRadius = 0;
+        for (var moduleLocation : m_moduleLocations) {
+            driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
+        }
+
         AutoBuilder.configureHolonomic(
             ()->this.getState().Pose, // Supplier of current robot pose
             this::seedFieldRelative,  // Consumer for seeding pose against auto
@@ -51,7 +56,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
                                             new PIDConstants(10, 0, 0),
                                             TunerConstants.kSpeedAt12VoltsMps,
-                                            TunerConstants.maxModuleRadius,
+                                            driveBaseRadius,
                                             new ReplanningConfig()),
             this); // Subsystem for requirements
     }

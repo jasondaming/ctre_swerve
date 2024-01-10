@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Util.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Util.CommandXboxPS5Controller;
 import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
 
@@ -37,12 +37,16 @@ public class RobotContainer {
   private double AngularRate = MaxAngularRate; // This will be updated when turtle and reset to MaxAngularRate
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  CommandXboxController drv = new CommandXboxController(0); // driver xbox controller
-  CommandXboxController op = new CommandXboxController(1); // operator xbox controller
+  CommandXboxPS5Controller drv = new CommandXboxPS5Controller(0); // driver xbox controller
+  CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
   
   // Field-centric driving in Open Loop, can change to closed loop after characterization 
-  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(AngularRate * 0.1);
+  SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+      .withDeadband(MaxSpeed * 0.1)
+      .withRotationalDeadband(AngularRate * 0.1);
+
   // Field-centric driving in Closed Loop.  Comment above and uncomment below.
   //SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(AngularRate * 0.1);
 

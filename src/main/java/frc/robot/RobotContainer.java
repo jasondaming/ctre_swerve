@@ -13,6 +13,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,15 +42,18 @@ public class RobotContainer {
   CommandXboxPS5Controller drv = new CommandXboxPS5Controller(0); // driver xbox controller
   CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
+
+  // Slew Rate Limiters to limit acceleration of joystick inputs
+  private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
+  private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
   
   // Field-centric driving in Open Loop, can change to closed loop after characterization 
+  // For closed loop replace DriveRequestType.OpenLoopVoltage with DriveRequestType.Velocity
   SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-      .withDeadband(MaxSpeed * 0.1)
+      .withDeadband(MaxSpeed * 0.1) // Deadband is handled on input
       .withRotationalDeadband(AngularRate * 0.1);
-
-  // Field-centric driving in Closed Loop.  Comment above and uncomment below.
-  //SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric().withDriveRequestType(DriveRequestType.Velocity).withDeadband(MaxSpeed * 0.1).withRotationalDeadband(AngularRate * 0.1);
 
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
@@ -187,5 +192,9 @@ public class RobotContainer {
   private void newSpeed() {
     lastSpeed = speedChooser.getSelected();
     MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * lastSpeed;
+  }
+
+  private double conditionX(double joystick, double deadband) {
+    return xLimiter.calculate(MathUtil.applyDeadband(joystick, deadband));
   }
 }

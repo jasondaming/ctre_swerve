@@ -42,11 +42,7 @@ public class Limelight extends SubsystemBase {
       LimelightHelpers.Results result =
           LimelightHelpers.getLatestResults(ll).targetingResults;
       if (result.valid) {
-        if (alliance == Alliance.Blue) {
-          botpose = LimelightHelpers.getBotPose2d_wpiBlue(ll);
-        } else if (alliance == Alliance.Red) {
-          botpose = LimelightHelpers.getBotPose2d_wpiRed(ll);
-        }
+        botpose = LimelightHelpers.getBotPose2d_wpiBlue(ll);
         if (field.isPoseWithinArea(botpose)) {
           if (drivetrain.getState().Pose.getTranslation().getDistance(botpose.getTranslation()) < 0.5
               || trust

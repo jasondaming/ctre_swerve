@@ -21,9 +21,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Commands.DriveToGamePiece;
+import frc.robot.Commands.StrafeToGamePiece;
+import frc.robot.LED.LEDSubsystem;
 import frc.robot.Util.CommandXboxPS5Controller;
 import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
@@ -43,6 +47,11 @@ public class RobotContainer {
   CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
 
+  // Starting the other subsystems
+  LEDSubsystem lights = new LEDSubsystem();
+  Limelight intakeCamera = new Limelight(drivetrain, "intake");
+  Limelight shooterCamera = new Limelight(drivetrain, "shooter");
+
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
   private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
@@ -58,8 +67,6 @@ public class RobotContainer {
   SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-  Limelight vision = new Limelight(drivetrain);
 
   Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -97,6 +104,13 @@ public class RobotContainer {
 
     Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
     speedPick.onTrue(runOnce(() -> newSpeed()));
+
+    Trigger noteFound = new Trigger(() -> intakeCamera.hasTarget());
+    noteFound.onTrue(runOnce(() -> lights.setAll(Color.kGreen)));
+    noteFound.onFalse(runOnce(() -> lights.setAll(Color.kBlue)));
+
+    drv.x().whileTrue(new DriveToGamePiece(drivetrain, intakeCamera));
+    drv.y().whileTrue(new StrafeToGamePiece(drivetrain, intakeCamera));
 
     drv.x().and(drv.pov(0)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kForward));
     drv.x().and(drv.pov(180)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kReverse));

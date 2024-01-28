@@ -54,7 +54,7 @@ public class RobotContainer {
 
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
-  private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
+  private final SlewRateLimiter yLimiter = new SlewRateLimiter(2);
   private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
   
   // Field-centric driving in Open Loop, can change to closed loop after characterization 
@@ -210,5 +210,13 @@ public class RobotContainer {
 
   private double conditionX(double joystick, double deadband) {
     return xLimiter.calculate(MathUtil.applyDeadband(joystick, deadband));
+  }
+
+  private double conditionY(double joystick, double deadband) {
+    return yLimiter.calculate(MathUtil.applyDeadband(joystick, deadband));
+  }
+
+  private double conditionRot(double joystick, double deadband) {
+    return rotLimiter.calculate(MathUtil.applyDeadband(joystick, deadband));
   }
 }

@@ -5,21 +5,21 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Intake extends SubsystemBase {
-  private static final int intakePrimaryID = 1;
+  private static final int intakePrimaryID = 9;
+  private static final int intakeSensorPort = 0;
   private CANSparkMax m_motor;
-  private SparkPIDController m_pidController;
 
-  // Intake Speed in RPM
-  private static final double intakeSpeed = 50.0;
+  private static final double intakeSpeed = 0.5;
+  private DigitalInput noteSensor = new DigitalInput(intakeSensorPort);
 
   /** Creates a new Arm. */
   public Intake() {
@@ -28,23 +28,24 @@ public class Intake extends SubsystemBase {
     m_motor.restoreFactoryDefaults();
     m_motor.setInverted(false);
     m_motor.setIdleMode(IdleMode.kBrake);
-
-    m_pidController = m_motor.getPIDController();
-    m_pidController.setP(0.1);
-    m_pidController.setI(0);
-    m_pidController.setD(0);
-    m_pidController.setIZone(0);
-    m_pidController.setFF(0);
-    m_pidController.setOutputRange(-0.25, 0.25);
-
+    m_motor.enableVoltageCompensation(12);
     m_motor.burnFlash();
   }
 
   public Command intakeOn() {
-    return this.runOnce(() -> m_pidController.setReference(intakeSpeed, ControlType.kVelocity));
+    return this.runOnce(() -> m_motor.set(intakeSpeed));
   }
 
   public Command intakeOff() {
-    return this.runOnce(() -> m_pidController.setReference(0, ControlType.kVelocity));
+    return this.runOnce(() -> m_motor.set(0));
+  }
+
+  public Command shoot() {
+    return this.runOnce(() -> m_motor.set(intakeSpeed)).withTimeout(0.2)
+        .andThen(this.runOnce(() -> m_motor.set(0)));
+  }
+
+  public Trigger getIntakeSensor() {
+    return new Trigger(() -> noteSensor.get());
   }
 }

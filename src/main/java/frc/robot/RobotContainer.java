@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Util.CommandXboxPS5Controller;
+import frc.robot.Util.RoboticPathing;
 import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
 
@@ -43,6 +44,7 @@ public class RobotContainer {
   CommandXboxPS5Controller drv = new CommandXboxPS5Controller(0); // driver xbox controller
   CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
+  RoboticPathing robo = new RoboticPathing();
 
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
@@ -84,6 +86,8 @@ public class RobotContainer {
     drv.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-drv.getLeftY(), -drv.getLeftX()))));
 
+    drv.x().whileTrue(robo.TopAmpRobotic);
+
     // reset the field-centric heading on start button press
     drv.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
@@ -103,6 +107,9 @@ public class RobotContainer {
 
     Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
     speedPick.onTrue(runOnce(() -> newSpeed()));
+
+    // Turn the intake off whenever the note gets to the sensor
+    intake.getIntakeSensor().onTrue(intake.intakeOff());
 
     drv.x().and(drv.pov(0)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kForward));
     drv.x().and(drv.pov(180)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kReverse));
@@ -126,8 +133,12 @@ public class RobotContainer {
 
     // Create PathPlanner Named Commands for use in Autos
     NamedCommands.registerCommand("shooterAutoSpeed", shooter.setAutoSpeed());
+    NamedCommands.registerCommand("shooterAmpSpeed", shooter.setAmpSpeed());
+    NamedCommands.registerCommand("shooterOffSpeed", shooter.setOffSpeed());
+    NamedCommands.registerCommand("shoot", intake.shoot());
     NamedCommands.registerCommand("armIntakePosition", arm.setIntakePosition());
     NamedCommands.registerCommand("armShootPosition", arm.setShootPosition());
+    NamedCommands.registerCommand("armAmpPosition", arm.setAmpPosition());
     NamedCommands.registerCommand("intakeOn", intake.intakeOn());
     NamedCommands.registerCommand("intakeOff", intake.intakeOff());
 

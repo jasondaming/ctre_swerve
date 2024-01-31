@@ -1,0 +1,118 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2736970928487312,
+        "y": 5.513288844759509
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2050697410876046,
+        "y": 4.596618567119067
+      },
+      "isLocked": false,
+      "linkedName": "CenterStart"
+    },
+    {
+      "anchor": {
+        "x": 2.410669293610502,
+        "y": 4.493818790857619
+      },
+      "prevControl": {
+        "x": 2.035050127188097,
+        "y": 4.785967031408379
+      },
+      "nextControl": {
+        "x": 2.6750115754256556,
+        "y": 4.288219238334721
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.2736970928487312,
+        "y": 5.513288844759509
+      },
+      "prevControl": {
+        "x": 2.263812470379861,
+        "y": 4.552561520149875
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CenterStart"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -41.98721249581657,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "armIntakePosition"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeOn"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeOff"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "armShootPosition"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

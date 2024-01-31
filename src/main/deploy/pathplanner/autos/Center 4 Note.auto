@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAutoSpeed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAutoSpeed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAutoSpeed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center to 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shooterAutoSpeed"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

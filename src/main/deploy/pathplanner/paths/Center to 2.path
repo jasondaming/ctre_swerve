@@ -1,0 +1,112 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2736970928487312,
+        "y": 5.513288844759509
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4118040963354654,
+        "y": 5.513288844759509
+      },
+      "isLocked": false,
+      "linkedName": "CenterStart"
+    },
+    {
+      "anchor": {
+        "x": 2.4,
+        "y": 5.513288844759509
+      },
+      "prevControl": {
+        "x": 1.9241425080543864,
+        "y": 5.513288844759509
+      },
+      "nextControl": {
+        "x": 2.878047031845093,
+        "y": 5.513288844759509
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.2736970928487312,
+        "y": 5.513288844759509
+      },
+      "prevControl": {
+        "x": 2.7936970928487312,
+        "y": 5.513288844759509
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CenterStart"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "armIntakePosition"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeOn"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shoot",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "intakeOff"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "armShootPosition"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -47,6 +48,11 @@ public class RobotContainer {
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
   private final SlewRateLimiter yLimiter = new SlewRateLimiter(0.5);
   private final SlewRateLimiter rotLimiter = new SlewRateLimiter(0.5);
+
+  // Create Subsystems
+  private final Arm arm = new Arm();
+  private final Shooter shooter = new Shooter();
+  private final Intake intake = new Intake();
   
   // Field-centric driving in Open Loop, can change to closed loop after characterization 
   // For closed loop replace DriveRequestType.OpenLoopVoltage with DriveRequestType.Velocity
@@ -117,6 +123,13 @@ public class RobotContainer {
   public RobotContainer() {
     // Detect if controllers are missing / Stop multiple warnings
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    // Create PathPlanner Named Commands for use in Autos
+    NamedCommands.registerCommand("shooterAutoSpeed", shooter.setAutoSpeed());
+    NamedCommands.registerCommand("armIntakePosition", arm.setIntakePosition());
+    NamedCommands.registerCommand("armShootPosition", arm.setShootPosition());
+    NamedCommands.registerCommand("intakeOn", intake.intakeOn());
+    NamedCommands.registerCommand("intakeOff", intake.intakeOff());
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();

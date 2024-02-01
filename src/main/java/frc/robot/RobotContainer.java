@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.either;
 import static edu.wpi.first.wpilibj2.command.Commands.runOnce;
 
 import java.util.function.Supplier;
@@ -45,6 +46,7 @@ public class RobotContainer {
   CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
   RoboticPathing robo = new RoboticPathing();
+  boolean speaker = true;
 
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
@@ -82,11 +84,9 @@ public class RobotContainer {
     newControlStyle();
     newSpeed();
 
-    drv.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    drv.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-drv.getLeftY(), -drv.getLeftX()))));
-
-    drv.x().whileTrue(robo.TopAmpRobotic);
+    drv.x().whileTrue(either(robo.topRobotic, robo.TopAmpRobotic, () -> speaker));
+    drv.y().whileTrue(either(robo.midRobotic, robo.MidAmpRobotic, () -> speaker));
+    drv.b().whileTrue(either(robo.botRobotic, robo.BotAmpRobotic, () -> speaker));
 
     // reset the field-centric heading on start button press
     drv.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));

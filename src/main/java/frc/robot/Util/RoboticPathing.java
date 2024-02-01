@@ -17,9 +17,9 @@ public class RoboticPathing {
   public PathPlannerPath botPath = PathPlannerPath.fromPathFile("Bot to Amp");
 
   // Key Poses to target
-  public Pose2d topPose = new Pose2d(2.9, 6.8, Rotation2d.fromDegrees(-155.0));
+  public Pose2d topPose = new Pose2d(2.9, 6.8, Rotation2d.fromDegrees(35.0));
   public Pose2d midPose = new Pose2d(2.9, 5.55, Rotation2d.fromDegrees(0));
-  public Pose2d botPose = new Pose2d(2.1, 3.0, Rotation2d.fromDegrees(130));
+  public Pose2d botPose = new Pose2d(2.1, 3.0, Rotation2d.fromDegrees(-50));
 
   // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
   public PathConstraints constraints = new PathConstraints(

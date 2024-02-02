@@ -13,12 +13,11 @@
     },
     "windows": {
       "/Pose": {
-        "bottom": 544,
-        "builtin": "2024 Crescendo",
-        "height": 8.013679504394531,
-        "left": 46,
-        "right": 1088,
-        "top": 36,
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
         "traj": {
           "arrows": false,
           "style": "Line"
@@ -65,10 +64,10 @@
         "double[]##v_/Pose/robotPose": {
           "open": true
         }
+      },
+      "SmartDashboard": {
+        "open": true
       }
     }
-  },
-  "NetworkTables Info": {
-    "visible": true
   }
 }

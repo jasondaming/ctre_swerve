@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Util.CommandXboxPS5Controller;
+import frc.robot.Util.RectanglePoseArea;
 import frc.robot.Util.RoboticPathing;
 import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
@@ -45,8 +47,7 @@ public class RobotContainer {
   CommandXboxPS5Controller drv = new CommandXboxPS5Controller(0); // driver xbox controller
   CommandXboxPS5Controller op = new CommandXboxPS5Controller(1); // operator xbox controller
   CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // drivetrain
-  RoboticPathing robo = new RoboticPathing();
-  boolean speaker = true;
+  RoboticPathing robo = new RoboticPathing();  
 
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);
@@ -84,9 +85,20 @@ public class RobotContainer {
     newControlStyle();
     newSpeed();
 
-    drv.x().whileTrue(either(robo.topRobotic, robo.TopAmpRobotic, () -> speaker));
-    drv.y().whileTrue(either(robo.midRobotic, robo.MidAmpRobotic, () -> speaker));
-    drv.b().whileTrue(either(robo.botRobotic, robo.BotAmpRobotic, () -> speaker));
+    drv.x().whileTrue(either(
+      either(robo.topRobotic, robo.TopAmpRobotic, () -> SmartDashboard.getBoolean("speaker",false)),
+      robo.topSourceRobotic,
+      () -> SmartDashboard.getBoolean("noteLoaded", false)).repeatedly());
+
+    drv.y().whileTrue(either(
+      either(robo.midRobotic, robo.MidAmpRobotic, () -> SmartDashboard.getBoolean("speaker",false)),
+      robo.midSourceRobotic,
+      () -> SmartDashboard.getBoolean("noteLoaded", false)).repeatedly());
+
+    drv.b().whileTrue(either(
+      either(robo.botRobotic, robo.BotAmpRobotic, () -> SmartDashboard.getBoolean("speaker",false)),
+      robo.botSourceRobotic,
+      () -> SmartDashboard.getBoolean("noteLoaded", false)).repeatedly());
 
     // reset the field-centric heading on start button press
     drv.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -97,8 +109,24 @@ public class RobotContainer {
     drv.leftBumper().onFalse(runOnce(() -> MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * speedChooser.getSelected())
         .andThen(() -> AngularRate = MaxAngularRate));
 
+    drv.pov(90).onTrue(runOnce(() -> SmartDashboard.putBoolean("speaker", true)));
+    drv.pov(270).onTrue(runOnce(() -> SmartDashboard.putBoolean("speaker", false)));
+
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
+      // In sim when we go near the spearker / amp trigger a note release
+      RectanglePoseArea shootArea = new RectanglePoseArea(
+        new Translation2d(0.0, 2.75),
+        new Translation2d(3.75, 8.15));
+      Trigger shootTrigger = new Trigger(() -> shootArea.isPoseWithinArea(drivetrain.getState().Pose));
+      shootTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", false)));
+
+      // In sim when we go near source trigger a note pickup
+      RectanglePoseArea pickupArea = new RectanglePoseArea(
+        new Translation2d(12.5, 0.0),
+        new Translation2d(16.45, 3.75));
+      Trigger pickupTrigger = new Trigger(() -> pickupArea.isPoseWithinArea(drivetrain.getState().Pose));
+      pickupTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", true)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -109,7 +137,10 @@ public class RobotContainer {
     speedPick.onTrue(runOnce(() -> newSpeed()));
 
     // Turn the intake off whenever the note gets to the sensor
-    intake.getIntakeSensor().onTrue(intake.intakeOff());
+    intake.getIntakeSensor().onTrue(intake.intakeOff().alongWith(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", true))));
+    intake.getIntakeSensor().onFalse(
+        new WaitCommand(0.2).andThen(shooter.setOffSpeed())
+        .alongWith(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", false))));
 
     drv.x().and(drv.pov(0)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kForward));
     drv.x().and(drv.pov(180)).whileTrue(drivetrain.runDriveQuasiTest(Direction.kReverse));
@@ -166,6 +197,9 @@ public class RobotContainer {
     SmartDashboard.putData("Speed Limit", speedChooser);
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    SmartDashboard.putBoolean("speaker", false);
+    SmartDashboard.putBoolean("noteLoaded", false);
 
     configureBindings();
   }

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -35,6 +36,18 @@ public class Telemetry {
         publisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
         SignalLogger.start();
+
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            double[] arr = new double[poses.size() * 3];
+            int ndx = 0;
+            for (Pose2d onepose : poses) {
+                arr[ndx + 0] = onepose.getX();
+                arr[ndx + 1] = onepose.getY();
+                arr[ndx + 2] = onepose.getRotation().getDegrees();
+                ndx += 3;
+            }
+            trajPub.set(arr);
+        });
     }
 
     /* What to publish over networktables for telemetry */
@@ -43,6 +56,7 @@ public class Telemetry {
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("Pose");
     private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
+    private final DoubleArrayPublisher trajPub = table.getDoubleArrayTopic("traj").publish();
     private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     /* Robot speeds for general checking */

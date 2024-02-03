@@ -20,7 +20,7 @@ public class Limelight extends SubsystemBase {
   Alliance alliance;
   private String ll = "limelight";
   private Boolean enable = false;
-  private Boolean tagmode = true;
+  private Boolean tagmode = false;
   private Boolean trust = false;
   private int fieldError = 0;
   private int distanceError = 0;

@@ -49,8 +49,8 @@ public class RobotContainer {
 
   // Starting the other subsystems
   LEDSubsystem lights = new LEDSubsystem();
-  Limelight intakeCamera = new Limelight(drivetrain, "intake");
-  Limelight shooterCamera = new Limelight(drivetrain, "shooter");
+  Limelight intakeCamera = new Limelight(drivetrain, "limelight-note");
+  Limelight shooterCamera = new Limelight(drivetrain, "limelight");
 
   // Slew Rate Limiters to limit acceleration of joystick inputs
   private final SlewRateLimiter xLimiter = new SlewRateLimiter(2);

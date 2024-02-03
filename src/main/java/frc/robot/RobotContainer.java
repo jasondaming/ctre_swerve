@@ -28,8 +28,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Util.CommandXboxPS5Controller;
+import frc.robot.Util.InterpolatingTable;
 import frc.robot.Util.RectanglePoseArea;
 import frc.robot.Util.RoboticPathing;
+import frc.robot.Util.ShotParameter;
 import frc.robot.Vision.Limelight;
 import frc.robot.generated.TunerConstants;
 
@@ -254,5 +256,11 @@ public class RobotContainer {
 
   private double conditionX(double joystick, double deadband) {
     return xLimiter.calculate(MathUtil.applyDeadband(joystick, deadband));
+  }
+
+  private Command distanceShot(double distance) {
+    ShotParameter shot = InterpolatingTable.get(distance);
+    return shooter.runOnce(() -> shooter.setRPS(shot.rpm / 60.0))
+      .alongWith(arm.runOnce(() -> arm.setGoal(shot.angle)));
   }
 }

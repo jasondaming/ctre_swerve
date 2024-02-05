@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -116,19 +117,6 @@ public class RobotContainer {
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
-      // In sim when we go near the spearker / amp trigger a note release
-      RectanglePoseArea shootArea = new RectanglePoseArea(
-        new Translation2d(0.0, 2.75),
-        new Translation2d(3.75, 8.15));
-      Trigger shootTrigger = new Trigger(() -> shootArea.isPoseWithinArea(drivetrain.getState().Pose));
-      shootTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", false)));
-
-      // In sim when we go near source trigger a note pickup
-      RectanglePoseArea pickupArea = new RectanglePoseArea(
-        new Translation2d(12.5, 0.0),
-        new Translation2d(16.45, 3.75));
-      Trigger pickupTrigger = new Trigger(() -> pickupArea.isPoseWithinArea(drivetrain.getState().Pose));
-      pickupTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", true)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -262,5 +250,40 @@ public class RobotContainer {
     ShotParameter shot = InterpolatingTable.get(distance);
     return shooter.runOnce(() -> shooter.setRPS(shot.rpm / 60.0))
       .alongWith(arm.runOnce(() -> arm.setGoal(shot.angle)));
+  }
+
+  public void colorReceived(Alliance ally) {
+    SmartDashboard.putString("ally", ally.toString());
+    if (Utils.isSimulation()) {
+      if (ally == Alliance.Blue) {
+        // In sim when we go near the spearker / amp trigger a note release
+        RectanglePoseArea shootArea = new RectanglePoseArea(
+          new Translation2d(0.0, 2.75),
+          new Translation2d(3.75, 8.27));
+        Trigger shootTrigger = new Trigger(() -> shootArea.isPoseWithinArea(drivetrain.getState().Pose));
+        shootTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", false)));
+
+        // In sim when we go near source trigger a note pickup
+        RectanglePoseArea pickupArea = new RectanglePoseArea(
+          new Translation2d(12.5, 0.0),
+          new Translation2d(16.54, 3.75));
+        Trigger pickupTrigger = new Trigger(() -> pickupArea.isPoseWithinArea(drivetrain.getState().Pose));
+        pickupTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", true)));
+      } else {
+        // In sim when we go near the spearker / amp trigger a note release
+        RectanglePoseArea shootArea = new RectanglePoseArea(
+          new Translation2d(12.79, 2.75),
+          new Translation2d(16.54, 8.27));
+        Trigger shootTrigger = new Trigger(() -> shootArea.isPoseWithinArea(drivetrain.getState().Pose));
+        shootTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", false)));
+
+        // In sim when we go near source trigger a note pickup
+        RectanglePoseArea pickupArea = new RectanglePoseArea(
+          new Translation2d(0.0, 0.0),
+          new Translation2d(4.0, 3.75));
+        Trigger pickupTrigger = new Trigger(() -> pickupArea.isPoseWithinArea(drivetrain.getState().Pose));
+        pickupTrigger.onTrue(runOnce(() -> SmartDashboard.putBoolean("noteLoaded", true)));
+      }
+    }
   }
 }

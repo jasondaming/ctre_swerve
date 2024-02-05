@@ -4,8 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.generated.TunerConstants;
@@ -15,14 +13,12 @@ public class RoboticPathing {
   public PathPlannerPath topPath = PathPlannerPath.fromPathFile("Top to Amp");
   public PathPlannerPath midPath = PathPlannerPath.fromPathFile("Mid to Amp");
   public PathPlannerPath botPath = PathPlannerPath.fromPathFile("Bot to Amp");
-
-  // Key Poses to target
-  public Pose2d topPose = new Pose2d(2.9, 6.8, Rotation2d.fromDegrees(35.0));
-  public Pose2d midPose = new Pose2d(2.9, 5.55, Rotation2d.fromDegrees(0));
-  public Pose2d botPose = new Pose2d(2.1, 3.0, Rotation2d.fromDegrees(-50));
-  public Pose2d topSourcePose = new Pose2d(14.6, 2.92, Rotation2d.fromDegrees(-72));
-  public Pose2d midSourcePose = new Pose2d(13.6, 2.5, Rotation2d.fromDegrees(-42));
-  public Pose2d botSourcePose = new Pose2d(13.0, 1.6, Rotation2d.fromDegrees(-20));
+  public PathPlannerPath topSource = PathPlannerPath.fromPathFile("Top Source");
+  public PathPlannerPath midSource = PathPlannerPath.fromPathFile("Mid Source");
+  public PathPlannerPath botSource = PathPlannerPath.fromPathFile("Bot Source");
+  public PathPlannerPath topSpeaker = PathPlannerPath.fromPathFile("Top Speaker");
+  public PathPlannerPath midSpeaker = PathPlannerPath.fromPathFile("Mid Speaker");
+  public PathPlannerPath botSpeaker = PathPlannerPath.fromPathFile("Bot Speaker");
 
   // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
   public PathConstraints constraints = new PathConstraints(
@@ -48,45 +44,39 @@ public class RoboticPathing {
           1.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command topRobotic = AutoBuilder.pathfindToPose(
-          topPose,
+  public Command topRobotic = AutoBuilder.pathfindThenFollowPath(
+          topSpeaker,
           constraints,
-          0.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command midRobotic = AutoBuilder.pathfindToPose(
-          midPose,
+  public Command midRobotic = AutoBuilder.pathfindThenFollowPath(
+          midSpeaker,
           constraints,
-          0.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command botRobotic = AutoBuilder.pathfindToPose(
-          botPose,
+  public Command botRobotic = AutoBuilder.pathfindThenFollowPath(
+          botSpeaker,
           constraints,
-          0.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command topSourceRobotic = AutoBuilder.pathfindToPose(
-          topSourcePose,
+  public Command topSourceRobotic = AutoBuilder.pathfindThenFollowPath(
+          topSource,
           constraints,
-          2.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command midSourceRobotic = AutoBuilder.pathfindToPose(
-          midSourcePose,
+  public Command midSourceRobotic = AutoBuilder.pathfindThenFollowPath(
+          midSource,
           constraints,
-          2.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 
-  public Command botSourceRobotic = AutoBuilder.pathfindToPose(
-          botSourcePose,
+  public Command botSourceRobotic = AutoBuilder.pathfindThenFollowPath(
+          botSource,
           constraints,
-          2.0, // Goal end velocity in meters/sec
           0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
   );
 }

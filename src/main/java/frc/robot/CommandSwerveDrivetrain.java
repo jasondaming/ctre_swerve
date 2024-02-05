@@ -64,12 +64,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             new ReplanningConfig()),
             () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red alliance
-                    // This will flip the path being followed to the red side of the field during auto only.
                     // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
                     var alliance = DriverStation.getAlliance();
                     if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red & !DriverStation.isTeleop();
+                        return alliance.get() == DriverStation.Alliance.Red;
                     }
                     return false;
             },
